@@ -1,5 +1,5 @@
 
-export const getLocal = async () => {
+export const getLocal = () => {
     let user_id = localStorage.getItem("user_id");
     return user_id;
 }

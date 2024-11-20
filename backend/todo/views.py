@@ -43,7 +43,7 @@ class ProjectView(APIView):
             if not user_id:
                 return Response({"success": False, "message": "User not logged in"}, status=400)
             
-            projects = Project.objects.filter(user_id=user_id)
+            projects = Project.objects.filter(user_id=user_id).order_by("-created_at")
             return Response({"success": True, "data": ProjectSerializer(projects, many=True).data}, status=200)
         except Exception as e:
             return Response({"success": False, "message": str(e)}, status=400)
@@ -121,6 +121,38 @@ class TaskView(APIView):
             return Response({"success": True, "data": TodoSerializer(todos, many=True).data}, status=200)
         except Project.DoesNotExist:
             return Response({"success": False, "message": "Project not found"}, status=404)
+        except Exception as e:
+            return Response({"success": False, "message": str(e)}, status=400)
+        
+    def delete(self, request):
+        try:
+            user_id = request.GET.get("user_id")
+            if not user_id:
+                return Response({"success": False, "message": "User not logged in"}, status=403)
+            
+            todo_id = request.GET.get("todo_id")
+            todo = Todo.objects.get(id=todo_id)
+            todo.delete()
+            return Response({"success": True, "message": "Todo deleted successfully"}, status=200)
+        except Todo.DoesNotExist:
+            return Response({"success": False, "message": "Todo not found"}, status=404)
+        except Exception as e:
+            return Response({"success": False, "message": str(e)}, status=400)
+        
+    def put(self, request):
+        try:
+            user_id = request.GET.get("user_id")
+            if not user_id:
+                return Response({"success": False, "message": "User not logged in"}, status=403)
+            
+            todo_id = request.GET.get("todo_id")
+            data = request.data
+            todo = Todo.objects.get(id=todo_id)
+            todo.description = data["description"]
+            todo.save()
+            return Response({"success": True, "message": "Todo updated successfully", "data": TodoSerializer(todo).data}, status=200)
+        except Todo.DoesNotExist:
+            return Response({"success": False, "message": "Todo not found"}, status=404)
         except Exception as e:
             return Response({"success": False, "message": str(e)}, status=400)
         
