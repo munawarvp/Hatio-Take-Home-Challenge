@@ -13,26 +13,31 @@ gis collection. While doing the project setup dont forgot to add .env file in th
 
 ## Installation
 
-##To set up the project locally, follow these steps:
+To set up the project locally, follow these steps:
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/fitmyjob.git
 
 2. Navigate into the backend project directory:
-  cd backend
+   ```bash
+   cd backend
 
-3. Set up a virtual environment (optional but recommended):
-    python3 -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+4. Set up a virtual environment (optional but recommended):
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
    
-4. Install the required dependencies:
-    pip install -r requirements.txt
+6. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
 
-5. Set up the database:
-    python manage.py migrate
+8. Set up the database:
+   ```bash
+   python manage.py migrate
    
-6. Run the development server:
+10. Run the development server:
+    ```
     python manage.py runserver
 
 The project will run in "http://127.0.0.1:8000/"
