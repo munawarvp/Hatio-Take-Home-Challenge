@@ -35,4 +35,9 @@ const updateTaskNameApi = async (userId, taskId, description) => {
     return response.data;
 }
 
-export {getProjectApi, getTaskApi, addTaskApi, updateProjectApi, createProjectApi, taskUpdateApi, deleteTaskApi, updateTaskNameApi}
+const exportTaskApi = async (userId, projectId) => {
+    const response = await axios.get(`${BASE_URL}/project-summary?user_id=${userId}&project_id=${projectId}`);
+    return response.data;
+}
+
+export {getProjectApi, getTaskApi, addTaskApi, updateProjectApi, createProjectApi, taskUpdateApi, deleteTaskApi, updateTaskNameApi, exportTaskApi}

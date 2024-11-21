@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getLocal } from "../utils/helper";
-import {addTaskApi, createProjectApi, deleteTaskApi, getProjectApi, getTaskApi, taskUpdateApi, updateProjectApi, updateTaskNameApi} from "../utils/api_service";
+import {addTaskApi, createProjectApi, deleteTaskApi, exportTaskApi, getProjectApi, getTaskApi, taskUpdateApi, updateProjectApi, updateTaskNameApi} from "../utils/api_service";
 import { useNavigate } from "react-router-dom";
 
 function Home () {
@@ -54,7 +54,10 @@ function Home () {
         if (e.key === 'Enter' && e.target.value.trim()) {
             let addTaskResponse = await addTaskApi(userId, selectedProject, e.target.value);
             if (addTaskResponse.success) {
-                setTasks([...tasks, { id: tasks.length + 1, description: e.target.value, status: false }]);
+                let response = await getTaskApi(userId, selectedProject);
+                if (response.success) {
+                    setTasks(response.data);
+                }
                 setShowNewInput(false);
             }
         }
@@ -137,6 +140,15 @@ function Home () {
         }
     };
 
+    const handleProjectExport = async (projectId) => {
+        let userId = getLocal();
+        let response = await exportTaskApi(userId, projectId);
+        if (response.success) {
+            alert(response.message);
+            return;
+        }
+    }
+
     const logoutUser = () => {
         localStorage.removeItem("user_id");
         window.location.href = "/login";
@@ -201,7 +213,10 @@ function Home () {
                                     }}>
                                         <i className="fas fa-pen"></i>
                                     </button>
-                                    <button className="delete-button">
+                                    <button className="delete-button" onClick={(event)=>
+                                        {event.stopPropagation();
+                                        handleProjectExport(project.id)}
+                                    }>
                                         <i className="fa-duotone fa-solid fa-download"></i>
                                     </button>
                                 </div>

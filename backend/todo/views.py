@@ -1,8 +1,12 @@
+import os
+
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from service.gist import GistService
 from todo.models import Project, Todo
 from todo.serializers import ProjectSerializer, TodoSerializer
 
@@ -172,5 +176,63 @@ class TaskUpdateView(APIView):
             return Response({"success": True, "message": "Todo updated successfully", "data": TodoSerializer(todo).data}, status=200)
         except Todo.DoesNotExist:
             return Response({"success": False, "message": "Todo not found"}, status=404)
+        except Exception as e:
+            return Response({"success": False, "message": str(e)}, status=400)
+        
+
+class ProjectSummaryView(APIView):
+
+    def get(self, request):
+        try:
+            user_id = request.GET.get("user_id")
+            if not user_id:
+                return Response({"success": False, "message": "User not logged in"}, status=403)
+            
+            project_id = request.GET.get("project_id")
+            project = Project.objects.get(id=project_id)
+
+            total_tasks_count = Todo.objects.filter(project=project).count()
+            completed_tasks_count = Todo.objects.filter(project=project, status=True).count()
+            pending_tasks = Todo.objects.filter(project=project, status=False)
+            completed_tasks = Todo.objects.filter(project=project, status=True)
+
+            content = f"""\
+## {project.title}
+
+Summary: {completed_tasks_count} / {total_tasks_count} completed.
+
+Pending
+""" + "".join([f"- [ ] {todo}\n" for todo in pending_tasks]) + """
+
+Completed
+""" + "".join([f"- [x] {todo}\n" for todo in completed_tasks])
+            
+            # Save content to a local file
+            file_name = f"{project.title}.md"
+            file_path = os.path.join("todo/summary", file_name)  # Update path as needed
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+            with open(file_path, "w", encoding="utf-8") as file:
+                file.write(content)
+
+            # Upload file to gist
+            gist = GistService()
+            payload = {
+                "description": f"Summary for {project.title}",
+                "public": False,
+                "files": {
+                    file_name: {
+                        "content": content
+                    }
+                }
+            }
+
+            response = gist.create_gist(payload)
+            if response.status_code != 201:
+                return Response({"success": False, "message": "Failed to create gist"}, status=400)
+
+            # Return response
+            return Response({"success": True, "message": f"Markdown file '{file_name}' saved successfully."}, status=200)
+        
         except Exception as e:
             return Response({"success": False, "message": str(e)}, status=400)
