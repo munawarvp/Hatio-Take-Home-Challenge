@@ -16,24 +16,24 @@ gis collection. While doing the project setup dont forgot to add .env file in th
 To set up the project locally, follow these steps:
 
 1. Clone the repository:
-   ```bash
+   ```
    git clone https://github.com/yourusername/fitmyjob.git
 
 2. Navigate into the backend project directory:
-   ```bash
+   ```
    cd backend
 
 4. Set up a virtual environment (optional but recommended):
-   ```bash
+   ```
    python3 -m venv venv
    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
    
 6. Install the required dependencies:
-   ```bash
+   ```
    pip install -r requirements.txt
 
 8. Set up the database:
-   ```bash
+   ```
    python manage.py migrate
    
 10. Run the development server:
@@ -43,14 +43,17 @@ To set up the project locally, follow these steps:
 The project will run in "http://127.0.0.1:8000/"
 Use this to run frontend application and use as BASE_URL
 
-##To set up the frontend project:
+To set up the frontend project:
 7. Navigate into the frontend project directory:
+   
     cd .\frontend\hatiotodo
 
 8. Install the required dependencies:
-    npm install
+   ```
+   npm install
 
-9. Run application:
+10. Run application:
+    ```
     npm start
 
 ## Usage
